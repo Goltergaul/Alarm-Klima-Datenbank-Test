@@ -16,3 +16,6 @@
 
 .project
 *~
+
+db/alarm/*.tmp
+db/alarm/*.pre
