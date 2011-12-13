@@ -32,6 +32,7 @@ gem 'jquery-rails'
 
 gem "mongo_mapper"
 gem "bson_ext"
+gem "json"
 
 group :test do
   # Pretty printed test output

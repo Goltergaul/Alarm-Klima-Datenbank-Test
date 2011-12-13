@@ -4,8 +4,8 @@ require 'benchmark'
 @store = Hash.new
 files = ["BAMBU.A2.HadCM3.2001-2100.pre", "BAMBU.A2.HadCM3.2001-2100.tmp", "GRAS.A1FI.HadCM3.2001-2100.pre", "GRAS.A1FI.HadCM3.2001-2100.tmp", "SEDG.B1.HadCM3.2001-2100.pre", "SEDG.B1.HadCM3.2001-2100.tmp"]
 #files = ["BAMBU.A1.test.pre", "BAMBU.A1.test.tmp"]
-@path = "/Users/23tux/Desktop/geodata/"
-#@path = "#{Rails.root}/db/alarm/"
+#@path = "/Users/23tux/Desktop/geodata/"
+@path = "#{Rails.root}/db/alarm/"
 
 def readfile f
   
@@ -107,17 +107,19 @@ def printFilename f
 end
 
 def write2file
+  startTime = Time.now
   puts "Writing to #{@path}../tmp/alarm.json"
   handle = File.open(@path + "../tmp/alarm.json", "a")
   @store.each_pair do |model, scenarios|
     scenarios.each_pair do |scenario, years|
       years.each_pair do |year, months|
         months.each_pair do |month, document|
-          handle.write document.to_json + "\n"
+          handle.write JSON(document) + "\n"
         end
       end
     end 
   end
+  debug "Time for serializing json was " + (Time.now - startTime).to_s + "s"
   handle.close
 end
 

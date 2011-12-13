@@ -19,3 +19,4 @@
 
 db/alarm/*.tmp
 db/alarm/*.pre
+db/tmp
