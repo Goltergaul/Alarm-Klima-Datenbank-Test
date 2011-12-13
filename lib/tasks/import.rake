@@ -89,8 +89,6 @@ def readfile f
     count-=1
   end
   
-  debug "Save time: " + (Time.now - startTime).to_s + "s"
-  
   debug ""
   debug ""
   debug ""
@@ -110,12 +108,12 @@ end
 
 def write2file
   puts "Writing to #{@path}../tmp/alarm.json"
-  handle = File.open(@path+"../tmp/alarm.json", "a")
+  handle = File.open(@path + "../tmp/alarm.json", "a")
   @store.each_pair do |model, scenarios|
     scenarios.each_pair do |scenario, years|
       years.each_pair do |year, months|
         months.each_pair do |month, document|
-          handle.write document.to_json+"\n"
+          handle.write document.to_json + "\n"
         end
       end
     end 
