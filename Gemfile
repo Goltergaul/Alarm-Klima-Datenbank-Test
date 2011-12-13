@@ -31,6 +31,7 @@ gem 'jquery-rails'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem "mongo_mapper"
+gem "bson_ext"
 
 group :test do
   # Pretty printed test output
