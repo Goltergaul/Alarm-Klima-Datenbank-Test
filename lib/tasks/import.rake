@@ -2,7 +2,9 @@ load 'config/initializers/mongo.rb'
 require 'benchmark'
 
 @store = Hash.new
-files = ["BAMBU.A2.HadCM3.2001-2100.pre", "BAMBU.A2.HadCM3.2001-2100.tmp", "GRAS.A1FI.HadCM3.2001-2100.pre", "GRAS.A1FI.HadCM3.2001-2100.tmp", "SEDG.B1.HadCM3.2001-2100.pre", "SEDG.B1.HadCM3.2001-2100.tmp"]
+files = {1 => ["BAMBU.A2.HadCM3.2001-2100.pre", "BAMBU.A2.HadCM3.2001-2100.tmp"],
+         2 => ["GRAS.A1FI.HadCM3.2001-2100.pre", "GRAS.A1FI.HadCM3.2001-2100.tmp"],
+         3 => ["SEDG.B1.HadCM3.2001-2100.pre", "SEDG.B1.HadCM3.2001-2100.tmp"]}
 #files = ["BAMBU.A1.test.pre", "BAMBU.A1.test.tmp"]
 #@path = "/Users/23tux/Desktop/geodata/"
 @path = "#{Rails.root}/db/alarm/"
@@ -108,8 +110,8 @@ end
 
 def write2file
   startTime = Time.now
-  puts "Writing to #{@path}../tmp/alarm.json"
-  handle = File.open(@path + "../tmp/alarm.json", "a")
+  puts "Writing to #{@path}../tmp/alarm#{ENV["szenario"]}.json"
+  handle = File.open(@path + "../tmp/alarm#{ENV["szenario"]}.json", "a")
   @store.each_pair do |model, scenarios|
     scenarios.each_pair do |scenario, years|
       years.each_pair do |year, months|
@@ -130,7 +132,11 @@ namespace :alarm do
     
     Rake::Task["alarm:drop"].invoke
     
-    files.each do |f|  
+    unless ENV.include?("szenario")
+      raise "please specify szenario"
+    end
+    
+    files[ENV["szenario"].to_i].each do |f|  
       f = @path + f
       printFilename f
       readfile f
@@ -147,7 +153,7 @@ namespace :alarm do
     MongoMapper.database.collection("climas").drop
     debug "Database #{MongoMapper.database.name} dropped!"
     
-    handle = File.open(@path+"../tmp/alarm.json", "w").close #clear json file
+    handle = File.open(@path+"../tmp/alarm#{ENV["szenario"]}.json", "w").close #clear json file
   end
 end
 
