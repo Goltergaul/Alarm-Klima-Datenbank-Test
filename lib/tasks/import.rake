@@ -116,7 +116,7 @@ def write2file
     scenarios.each_pair do |scenario, years|
       years.each_pair do |year, months|
         months.each_pair do |month, document|
-          handle.write JSON(document) + "\n"
+          handle.write JSON(document) + ",\n"
         end
       end
     end 
@@ -147,13 +147,20 @@ namespace :alarm do
         @store = Hash.new
       end
     end
+    
+    # write file end
+    handle = File.open(@path + "../tmp/alarm#{ENV["szenario"]}.json", "a")
+    handle.write("{}]")
+    handle.close
   end
   
   task :drop do
     MongoMapper.database.collection("climas").drop
     debug "Database #{MongoMapper.database.name} dropped!"
     
-    handle = File.open(@path+"../tmp/alarm#{ENV["szenario"]}.json", "w").close #clear json file
+    handle = File.open(@path+"../tmp/alarm#{ENV["szenario"]}.json", "w")
+    handle.write("[")
+    handle.close #clear json file
   end
 end
 
