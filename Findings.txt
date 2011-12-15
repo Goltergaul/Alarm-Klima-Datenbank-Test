@@ -1,0 +1,23 @@
+Erster Versuch von Import:
+Documentenstruktur:
+  model: "Europa",
+  scenario: "GRAS",
+  year: 2001
+  month: 1,
+  data:
+    pre: [[]],
+    tmp: [[]]
+
+Für jede Zeile in den alarm-txts prüfen ob das document schon in der db ist und das data array manipulieren
+=> Extreeeeeem langsam
+
+2. Import versuch, selbe db struktur. Es wird jeweils ein scenarion eingelesen und die kompletten Daten werden
+in einem Hash gehalten und am Schluss wird aus dem Hash eine .json Datei erstellt, die alle DB Documente
+enthält. Diese wird mint Mongoimport dann in die db eingelesen. Arbeitsspeicherverbrauch beim erstellen der 
+JSON Datei 4,8 GB.
+=> Import recht schnell (ca ~2h für ein Szenario)
+
+Abfrage für den Durschnitt eines Jahres mit map/reduce und Mongo:
+=> Problem, da map/reduce in Mongo kein Live-Query ist, sondern nur eine weitere Collection mit den Ergebnissen
+des Map Reduces erstellt. Nach einer Änderung der Daten müsste also das Map/Reduce komplett neu durchgeführt werden.
+=> Dauert bei einem Szenario 93 sekunden. (Core i7 mit 2ghz, 8gb ram)
