@@ -11,4 +11,4 @@ class Clima
   key :year, Integer
   key :month, Integer
   key :data, Hash
-end
+end  
