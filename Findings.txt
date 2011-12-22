@@ -21,3 +21,53 @@ Abfrage für den Durschnitt eines Jahres mit map/reduce und Mongo:
 => Problem, da map/reduce in Mongo kein Live-Query ist, sondern nur eine weitere Collection mit den Ergebnissen
 des Map Reduces erstellt. Nach einer Änderung der Daten müsste also das Map/Reduce komplett neu durchgeführt werden.
 => Dauert bei einem Szenario 93 sekunden. (Core i7 mit 2ghz, 8gb ram)
+Abfrage:
+  db.climas.mapReduce(function() {
+    if(this.data.pre) {
+      emit(1,{pre: this.data.pre}); 
+    }
+  
+  }, function(key, reduceArr) { 
+    var result = { pre: reduceArr[0].pre }; 
+    for(var i = 1;i<reduceArr.length;i++) {
+      values = reduceArr[i].pre
+      for(var x = 0;x<values.length;x++) {
+        if(!values[x]) { continue; }
+        for(var y = 0;y<values[x].length;y++) {
+            result.pre[x][y] = (result.pre[x][y] + values[x][y]) / 2; <-- nicht korrekter AVG (für die laufzeit aber egal)
+        }
+      }
+    }
+  
+    return result;
+  },{out: {inline: 1}})
+
+2. Versuch der Abfrage, diesmal mit Mongodb.
+Import Kommando für couchdb: curl -d @GRAS.json -X POST http://127.0.0.1:5984/test/_bulk_docs -H "Content-Type: application/json"
+Design Document:
+  {
+     "_id": "_design/alarm",
+     "views": {
+         "monthly_avg": {
+             "map": "function(doc) {
+      if(doc.data)
+        emit([doc.year],{pre: doc.data}); 
+       }",
+             "reduce": "function(keys, values, rereduce) {
+        var result = { pre: values[0].pre }; 
+      for(var i = 1;i<values.length;i++) {
+        values = values[i].pre
+        for(var x = 0;x<values.length;x++) {
+          if(!values[x]) { continue; }
+          for(var y = 0;y<values[x].length;y++) {
+              result.pre[x][y] = (result.pre[x][y] + values[x][y]) / 2;
+          }
+        }
+      }
+  
+      return result;
+             }"
+         }
+     }
+  }
+Query: http://127.0.0.1:5984/alarm/_design/alarm/_view/monthly_avg?start_key=[2001],end_key=[2002]
