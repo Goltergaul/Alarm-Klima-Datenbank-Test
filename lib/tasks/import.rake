@@ -83,7 +83,10 @@ def readfile f
         doc = @store[model][scenario][year][month]
         doc["data"] = Hash.new if !doc["data"]
         doc["data"][variable] = Array.new if !doc["data"][variable]
-        doc["data"][variable][x]= Array.new if !doc["data"][variable][x]
+        if !doc["data"][variable][x]
+          doc["data"][variable][x] = Array.new
+          doc["data"][variable][x][227] = nil
+        end
         doc["data"][variable][x][y] = (value.to_i * multi).round(2)
       end
       year += 1
