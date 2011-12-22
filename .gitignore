@@ -19,4 +19,5 @@
 
 db/alarm/*.tmp
 db/alarm/*.pre
+db/alarm/*.gdd
 db/tmp
