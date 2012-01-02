@@ -1,4 +1,4 @@
-class YearlyAverage  
+class YearlyMinimum
   def self.map var
   values = "#{var}: this.data.#{var}"
   if var == "all"
@@ -32,18 +32,11 @@ JScript
             if(!reduceArr[i][variable][x]) { continue; }
             for(var y=0;y<reduceArr[i][variable][x].length;y++) {
               if(!reduceArr[i][variable][x][y]) {continue;}
-              result[variable][x][y] = result[variable][x][y] + reduceArr[i][variable][x][y];
-            }
-          }
-        }
-      }
-    
-      if(reduceArr.length > 1) {
-        for(var variable in reduceArr[0]) {
-          for(var x=0;x<result[variable].length;x++) {
-            if(!result[variable][x]) { continue; }
-            for(var y=0;y<result[variable][x].length;y++) {
-              result[variable][x][y] = result[variable][x][y] / reduceArr.length;
+                
+              if(reduceArr[i][variable][x][y] < result[variable][x][y]) {
+                result[variable][x][y] = reduceArr[i][variable][x][y];
+              }
+              
             }
           }
         }
