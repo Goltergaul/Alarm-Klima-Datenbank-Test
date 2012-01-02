@@ -5,7 +5,6 @@ require 'benchmark'
 files = {1 => ["BAMBU.A2.HadCM3.2001-2100.pre", "BAMBU.A2.HadCM3.2001-2100.tmp"],
          2 => ["GRAS.A1FI.HadCM3.2001-2100.pre", "GRAS.A1FI.HadCM3.2001-2100.tmp"],
          3 => ["SEDG.B1.HadCM3.2001-2100.pre", "SEDG.B1.HadCM3.2001-2100.tmp"]}
-#files = ["BAMBU.A1.test.pre", "BAMBU.A1.test.tmp"]
 #@path = "/Users/23tux/Desktop/geodata/"
 @path = "#{Rails.root}/db/alarm/"
 
