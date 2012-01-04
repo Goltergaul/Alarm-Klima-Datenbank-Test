@@ -142,13 +142,8 @@ namespace :alarm do
       f = @path + f
       printFilename f
       readfile f
-      
-      # nach jeder tmp file @store reseten und vorher in file schreiben
-      if f.split(".")[-1]=="tmp"
-        write2file()
-        @store = Hash.new
-      end
     end
+    write2file()
   end
   
   task :drop do
