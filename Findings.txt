@@ -1,3 +1,9 @@
+PC specs:
+Intel Core i7-2630QM CPU @ 2.00Ghz (Quadcore)
+Ram: 7.7 GB
+Architektur: Ubuntu 11.10 @ x86_64
+
+
 Erster Versuch von Import:
 Documentenstruktur:
   model: "Europa",
@@ -20,7 +26,7 @@ JSON Datei 4,8 GB.
 Abfrage für den Durschnitt eines Jahres mit map/reduce und Mongo:
 => Problem, da map/reduce in Mongo kein Live-Query ist, sondern nur eine weitere Collection mit den Ergebnissen
 des Map Reduces erstellt. Nach einer Änderung der Daten müsste also das Map/Reduce komplett neu durchgeführt werden.
-=> Dauert bei einem Szenario 93 sekunden. (Core i7 mit 2ghz, 8gb ram)
+=> Dauert bei einem Szenario 93 sekunden. (Allerdings für alle 100 Jahre)
 Abfrage:
   db.climas.mapReduce(function() {
     if(this.data.pre) {
@@ -42,32 +48,82 @@ Abfrage:
     return result;
   },{out: {inline: 1}})
 
-2. Versuch der Abfrage, diesmal mit Mongodb.
-Import Kommando für couchdb: curl -d @GRAS.json -X POST http://127.0.0.1:5984/test/_bulk_docs -H "Content-Type: application/json"
+2. Versuch der Abfrage, diesmal mit ChouchDb (weil Couch map/reduce zwischenergebnisse cached damit spätere schneller berechnet werden).
+Import Kommando für couchdb: siehe shell script in db/tmp/
 Design Document:
   {
      "_id": "_design/alarm",
      "views": {
          "monthly_avg": {
-             "map": "function(doc) {
-      if(doc.data)
-        emit([doc.year],{pre: doc.data}); 
-       }",
-             "reduce": "function(keys, values, rereduce) {
-        var result = { pre: values[0].pre }; 
-      for(var i = 1;i<values.length;i++) {
-        values = values[i].pre
-        for(var x = 0;x<values.length;x++) {
-          if(!values[x]) { continue; }
-          for(var y = 0;y<values[x].length;y++) {
-              result.pre[x][y] = (result.pre[x][y] + values[x][y]) / 2;
-          }
-        }
-      }
-  
-      return result;
-             }"
+             "map": "...",
+             "reduce": "..."
          }
      }
   }
+  
+######## Map Function: 
+function(doc) {
+  if(doc.data)emit([doc.model,doc.scenario,doc.year],doc.data.pre);
+}
+  
+######## Reduce Function:
+function(keys, values, rereduce){
+  var result = [];
+    
+  // Alle Nodes zusammenzählen
+  function add(i) {
+    for(var x=0;x<values[i].length;x++) {
+      if(!values[i][x]) { continue; }
+      for(var y=0;y<values[i][x].length;y++) {
+        if(!values[i][x][y]) {continue;}
+        result[x][y] = result[x][y] + values[i][x][y];
+      }
+    }
+  }
+
+  result = values[0];
+  for(var i=1;i<values.length;i++) {
+    add(i);
+  }
+
+  // Alle Values durch die Anzahl an zusammengezählten Nodes teilen => Average
+  if(values.length > 1) {
+    for(var x=0;x<result.length;x++) {
+      if(!result[x]) { continue; }
+      for(var y=0;y<result[x].length;y++) {
+        if(!result[x][y]) {continue;}
+        result[x][y] = result[x][y] / values.length;
+      }
+    }
+  }
+  
+
+  return result;
+}
+  
 Query: http://127.0.0.1:5984/alarm/_design/alarm/_view/monthly_avg?start_key=[2001],end_key=[2002]
+
+Ergebnis: Der Aufbau des Indexes dauert mehrere Stunden, die Abfragen an sich sind dann auch nicht wirklich schnell.
+Ursache: Damit diese Reduce Funktion überhaupt geht, musste in der Config von CouchDB das Reduce-Limit deaktiviert werden. 
+  Vermutlich verträgt CouchDb keine so großen Werte als Reduce-Rückgabe, so dass die Performance deshalb extrem in die Knie geht.
+Fazit: MongoDb mach den selben Map/Reduce, für den Couch Stunden braucht, in ~93 sekunden => Viel Performanter
+
+
+Endergebnis mittels MongoDB und obiger Datenbankstruktur:
+#############
+Ergebnis für die mapval Funktion, die die Differenz zwischen zwei Jahren bildet:
+
+Started GET "/mapval/Europe/GRAS/2001/Avg/all.json" for 127.0.0.1 at 2012-01-08 16:10:59 +0100
+Completed 200 OK in 4886ms (Views: 909.0ms)
+
+Started GET "/mapval/Europe/GRAS/2001/Avg/tmp.json" for 127.0.0.1 at 2012-01-08 16:16:02 +0100
+Completed 200 OK in 1711ms (Views: 290.8ms)
+
+#############
+Ergebnis für die mapdiff Funktion, die die Differenz zwischen zwei Jahren bildet:
+
+Started GET "/mapdiff/Europe/GRAS/2001/Avg/2002/Avg/all.json" for 127.0.0.1 at 2012-01-08 16:16:47 +0100
+Completed 200 OK in 9140ms (Views: 941.1ms)
+
+Started GET "/mapdiff/Europe/GRAS/2001/Avg/2002/Avg/tmp.json" for 127.0.0.1 at 2012-01-08 16:17:10 +0100
+Completed 200 OK in 2947ms (Views: 301.1ms)
