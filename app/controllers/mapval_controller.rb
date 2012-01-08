@@ -9,20 +9,12 @@ class MapvalController < ApplicationController
                  :year => params[:year].to_i }
     
     if ["Min", "Max", "Avg"].include? params[:month_function]
-      query = {
+      model = Clima.getBuilder params[:month_function]
+      match = model.build params[:variable], {
           :year => params[:year].to_i, 
           :model => params[:model], 
           :scenario => params[:scenario]
         }
-        
-      case params[:month_function]
-      when "Avg"
-        match = YearlyAverage.build params[:variable], query
-      when "Max"
-        match = YearlyMaximum.build params[:variable], query 
-      when "Min"
-        match = YearlyMinimum.build params[:variable], query 
-      end
       response[:function] = params[:month_function]
       response[:data] = match["results"][0]["value"]
     else
