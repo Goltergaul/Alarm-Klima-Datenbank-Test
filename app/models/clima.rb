@@ -30,6 +30,7 @@ class Clima
       values.each_with_index do |array, x|
         next if array.nil?
         array.each_with_index do |value, y|
+          next if a[variable][x][y].nil?
           a[variable][x][y] = b[variable][x][y] - a[variable][x][y]
         end
       end
