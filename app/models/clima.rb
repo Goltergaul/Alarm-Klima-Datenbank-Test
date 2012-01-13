@@ -13,12 +13,13 @@ class Clima
   key :data, Hash
   
   def self.getBuilder builder
+    builder.downcase!
     case builder
-    when "Avg"
+    when "avg"
       YearlyAverage
-    when "Max"
+    when "max"
       YearlyMaximum
-    when "Min"
+    when "min"
       YearlyMinimum 
     end
   end
