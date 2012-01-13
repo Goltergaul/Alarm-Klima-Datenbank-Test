@@ -1,5 +1,5 @@
 class MapdiffController < ApplicationController
-  respond_to :json
+  respond_to :json, :png
   
   def get
     
@@ -31,6 +31,12 @@ class MapdiffController < ApplicationController
 
     response[:data] = diff_result
 
-    respond_with(response)
+    respond_with(response) do |format|
+      format.json
+      format.png do
+        png = getPNG response[:data], params[:variable]
+        send_data png, :type =>"image/png", :disposition => 'inline'
+      end
+    end
   end
 end
