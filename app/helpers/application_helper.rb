@@ -58,8 +58,15 @@ module ApplicationHelper
         green = 255
         blue = 255
     end
-    range = max - min
-    percent = value / range
+    
+    if min < 0
+      range = max + min.abs
+      percent = (value + min.abs) / range
+    else
+      range = max - min
+      percent = value / range
+    end
+    
     red = (red*percent).to_i
     green = (green*percent).to_i
     blue = (blue*percent).to_i
