@@ -18,6 +18,11 @@ class MapvalController < ApplicationController
       response[:data] = match["results"][0]["value"]
     else
       match = Clima.find_by_year_and_month_and_model_and_scenario params[:year].to_i, params[:month_function].to_i, params[:model], params[:scenario]
+      if params[:variable]!="all"
+        match[:data].delete(:pre) unless params[:variable]=="pre"
+        match[:data].delete(:tmp) unless params[:variable]=="tmp"
+        match[:data].delete(:gdd) unless params[:variable]=="gdd"
+      end
       response[:month] = params[:month_function].to_i
       response[:data] = match[:data]
     end
@@ -26,7 +31,7 @@ class MapvalController < ApplicationController
       respond_with(response) do |format|
         format.json
         format.png do
-          png = getPNG response[:data][params[:variable]], params[:variable]
+          png = getPNG response[:data], params[:variable]
           send_data png, :type =>"image/png", :disposition => 'inline'
         end
       end

@@ -7,6 +7,15 @@ module ApplicationHelper
     
     png = ChunkyPNG::Image.new(300, 300, ChunkyPNG::Color::TRANSPARENT)
     
+    pre = values[:pre]
+    tmp = values[:tmp]
+    gdd = values[:gdd]
+    values = values[variable]
+    
+    # var_arr = [pre,tmp,gdd]
+    # 
+    # var_arr.each do |values|
+    
     values.each_with_index do |arr, x|
       arr.each_with_index do |value, y|
         next if value.nil?
@@ -43,6 +52,10 @@ module ApplicationHelper
       when "tmp"
         green = 255
       when "gdd"
+        blue = 255
+      when "all"
+        red = 255
+        green = 255
         blue = 255
     end
     range = max - min
