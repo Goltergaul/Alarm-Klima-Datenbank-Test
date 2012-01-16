@@ -8,7 +8,8 @@ class YearlyAverage
     function(){  
         if(this.data.tmp) {
           emit(1,{
-            #{values}
+            #{values},
+            sum_count: 0
           }); 
         }
     }  
@@ -23,10 +24,12 @@ JScript
 <<JScript  
     function(key, reduceArr) { 
       var result = { 
-        #{values}
+        #{values},
+        sum_count: reduceArr[0].sum_count
       }; 
-    
+      
       for(var i=1;i<reduceArr.length;i++) {
+        result.sum_count += reduceArr[i].sum_count + 1;
         for(var variable in reduceArr[i]) {
           for(var x=0;x<reduceArr[i][variable].length;x++) {
             if(!reduceArr[i][variable][x]) { continue; }
@@ -38,25 +41,36 @@ JScript
         }
       }
     
-      if(reduceArr.length > 1) {
-        for(var variable in reduceArr[0]) {
-          for(var x=0;x<result[variable].length;x++) {
-            if(!result[variable][x]) { continue; }
-            for(var y=0;y<result[variable][x].length;y++) {
-              result[variable][x][y] = result[variable][x][y] / reduceArr.length;
-            }
-          }
-        }
-      }
-    
       return result;
     
     } 
 JScript
   end  
   
+  def self.finalize 
+<<JScript
+    function(key, result){  
+      
+      result.sum_count += 1; // first sum was not counted because all docs are emitted with sum_count = 0
+      
+      for(var variable in result) {
+        for(var x=0;x<result[variable].length;x++) {
+          if(!result[variable][x]) { continue; }
+          for(var y=0;y<result[variable][x].length;y++) {
+            result[variable][x][y] = result[variable][x][y] / result.sum_count;
+          }
+        }
+      }
+      
+      delete result.sum_count;
+      
+      return result;
+    }  
+JScript
+  end  
+  
   def self.build variable, query
-    Clima.collection.map_reduce(map(variable), reduce(variable), :query => query, :out => {:inline => true}, :raw => true)  
+    Clima.collection.map_reduce(map(variable), reduce(variable), :finalize => finalize, :query => query, :out => {:inline => true}, :raw => true)  
   end
     
 end
