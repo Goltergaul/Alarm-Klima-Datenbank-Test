@@ -58,4 +58,5 @@ AlarmDb::Application.routes.draw do
   
   match 'mapval/:model/:scenario/:year/:month_function/:variable.:format', :to => 'mapval#get'
   match 'mapdiff/:model/:scenario/:year_a/:function_a/:year_b/:function_b/:variable.:format', :to => 'mapdiff#get'
+  match 'propval/:model/:scenario/:year/:month/:variable.:format', :to => 'propval#get'
 end

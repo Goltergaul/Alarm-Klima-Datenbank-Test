@@ -4,8 +4,6 @@ module ApplicationHelper
     height = 300
     min_value = nil
     max_value = nil
-    sum = 0
-    cnt = 0
     
     pre = {:variable => "pre", :data => values[:pre]}
     tmp = {:variable => "tmp", :data => values[:tmp]}
@@ -31,9 +29,6 @@ module ApplicationHelper
           max_value = value if max_value.nil?
           min_value = value if value < min_value
           max_value = value if value > max_value
-        
-          cnt = cnt + 1
-          sum = sum + value
         end unless arr.nil?
       end
     

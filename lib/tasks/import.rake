@@ -68,7 +68,7 @@ def readfile f
       # reset counter
       count=101
     else
-      month_values = line.scan(/\w+/)
+      month_values = line.scan(/-?\w+/)
       12.times do |month|
         value = month_values[month]
         
@@ -157,16 +157,3 @@ end
 def debug str
   puts str if ENV.include?("debug") 
 end
-
-
-
-
-
-
-
-# doc = Clima.find_or_create_by_model_and_year_and_month_and_scenario :model => model, :year => year, :month => month, :scenario => scenario
-# doc.data = Hash.new if !doc.data
-# doc.data[variable]= Array.new if !doc.data[variable]
-# doc.data[variable][x]= Array.new if !doc.data[variable][x]
-# doc.data[variable][x][y] = value
-# doc.save!

@@ -14,10 +14,10 @@ class MapdiffController < ApplicationController
       response[:function_b] = params[:function_b]
       
       query = {
-          :year => params[:year].to_i, 
-          :model => params[:model], 
-          :scenario => params[:scenario]
-        }
+        :year => params[:year].to_i, 
+        :model => params[:model], 
+        :scenario => params[:scenario]
+      }
         
       model_a = Clima.getBuilder params[:function_a]
       model_b = Clima.getBuilder params[:function_b]
