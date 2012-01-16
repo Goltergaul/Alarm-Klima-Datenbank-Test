@@ -28,7 +28,7 @@ gem 'chunky_png'
 # gem 'capistrano'
 
 # To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
+gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem "mongo_mapper"
 gem "bson_ext"
