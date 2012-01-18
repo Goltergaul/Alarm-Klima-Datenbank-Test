@@ -2,6 +2,8 @@ class MapvalController < ApplicationController
   respond_to :json, :png
   
   def get
+    # return if wrongFormat?
+    
     response = { :map => "val",
                  :model_name => params[:model],
                  :scenario_name => params[:scenario],
@@ -17,7 +19,12 @@ class MapvalController < ApplicationController
       response[:function] = params[:month_function]
       response[:data] = match["results"][0]["value"]
     else
-      match = Clima.find_by_year_and_month_and_model_and_scenario params[:year].to_i, params[:month_function].to_i, params[:model], params[:scenario]
+      match = Clima.find_by_year_and_month_and_model_and_scenario(
+                                                params[:year].to_i, 
+                                                params[:month_function].to_i, 
+                                                params[:model], 
+                                                params[:scenario]
+                                              )
       if params[:variable]!="all"
         match[:data].delete(:pre) unless params[:variable]=="pre"
         match[:data].delete(:tmp) unless params[:variable]=="tmp"

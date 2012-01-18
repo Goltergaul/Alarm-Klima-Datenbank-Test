@@ -4,9 +4,9 @@ module ApplicationHelper
     height = 229
     range = []
     
-    pre = {:variable => "pre", :data => values[:pre]}
-    tmp = {:variable => "tmp", :data => values[:tmp]}
-    gdd = {:variable => "gdd", :data => values[:gdd]}
+    pre = {:variable => "pre", :data => values["pre"]}
+    tmp = {:variable => "tmp", :data => values["tmp"]}
+    gdd = {:variable => "gdd", :data => values["gdd"]}
     
     var_arr = [pre,tmp,gdd]
     images = []
@@ -119,5 +119,57 @@ module ApplicationHelper
     blue = (blue*percent).to_i
     
     ChunkyPNG::Color.rgba(red, green, blue, 255)
+  end
+  
+  def wrongFormat?
+    error = false
+    reasons = []
+    puts params
+    
+    models = ["Europe"]
+    scenarios = ["BAMBU","GRAS","SEDG"]
+    year_range = 2001..2100
+    month_range = 1..12
+    variables = ["pre","tmp","gdd","all"]
+    functions = ["Max", "Min", "Avg"]
+    
+    unless models.include? params[:model]
+      error = true
+      reasons.push("Wrong model name, available: Europe.")
+    end
+    
+    unless scenarios.include? params[:scenario]
+      error = true
+      reasons.push("Wrong scenario name, available: BAMBU, GRAS, SEDG.")
+    end
+    
+    unless year_range.include?(params[:year].to_i)
+      error = true
+      reasons.push("Wrong year, must be in range from 2001-2100.")
+    end
+    
+    unless month_range.include?(params[:month_function].to_i) and functions.include?(params[:month_function].to_i)
+      error = true
+      reasons.push("Wrong month, must be in range from 1-12 or a function Min, Max, Avg")
+    end
+    
+    unless variables.include?(params[:variable])
+      error = true
+      reasons.push("Wrong variable, must be tmp, pre, gdd or all.")
+    end
+    
+    if error
+      errorHash = {
+        :response => 500,
+        :message => "Can't process, you gave me a wrong format!",
+        :reasons => reasons
+      }
+      
+      respond_with(errorHash)
+      
+      return true
+    else
+      return false
+    end
   end
 end
