@@ -1,5 +1,5 @@
 class MapvalController < ApplicationController
-  respond_to :json, :png
+  respond_to :json, :png, :bson
   
   def get
     # return if wrongFormat?
@@ -37,6 +37,9 @@ class MapvalController < ApplicationController
     
       respond_with(response) do |format|
         format.json
+        format.bson do
+          send_data BSON.serialize(response)
+        end
         format.png do
           png = getPNG response[:data], params[:variable]
           send_data png, :type =>"image/png", :disposition => 'inline'

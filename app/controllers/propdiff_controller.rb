@@ -1,5 +1,5 @@
 class PropdiffController < ApplicationController
-  respond_to :json
+  respond_to :json, :bson
   
   def get
     response = { :prop => "diff",
@@ -36,6 +36,11 @@ class PropdiffController < ApplicationController
     
     response[:data] = match
     
-    respond_with(response)
+    respond_with(response) do |format|
+      format.json
+      format.bson do
+        send_data BSON.serialize(response)
+      end
+    end
   end
 end
