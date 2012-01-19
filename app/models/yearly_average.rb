@@ -57,6 +57,8 @@ JScript
         for(var x=0;x<result[variable].length;x++) {
           if(!result[variable][x]) { continue; }
           for(var y=0;y<result[variable][x].length;y++) {
+            if(result[variable][x][y]==null)
+              continue;
             result[variable][x][y] = result[variable][x][y] / result.sum_count;
           }
         }

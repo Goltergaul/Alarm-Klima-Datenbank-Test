@@ -25,11 +25,9 @@ class MapvalController < ApplicationController
                                                 params[:model], 
                                                 params[:scenario]
                                               )
-      if params[:variable]!="all"
-        match[:data].delete(:pre) unless params[:variable]=="pre"
-        match[:data].delete(:tmp) unless params[:variable]=="tmp"
-        match[:data].delete(:gdd) unless params[:variable]=="gdd"
-      end
+
+      match[:data] = removeNonUsedVariables match[:data], params[:variable]
+
       response[:month] = params[:month_function].to_i
       response[:data] = match[:data]
     end
@@ -38,7 +36,7 @@ class MapvalController < ApplicationController
       respond_with(response) do |format|
         format.json
         format.png do
-          png = getPNG response[:data], params[:variable]
+          png = getPNG response[:data]
           send_data png, :type =>"image/png", :disposition => 'inline'
         end
       end

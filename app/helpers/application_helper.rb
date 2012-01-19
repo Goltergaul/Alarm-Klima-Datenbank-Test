@@ -1,5 +1,14 @@
 module ApplicationHelper
-  def getPNG values, var
+  def removeNonUsedVariables data, var
+    unless var=="all"
+      data.delete("pre") unless var=="pre"
+      data.delete("tmp") unless var=="tmp"
+      data.delete("gdd") unless var=="gdd"
+    end
+    data
+  end
+
+  def getPNG values
     width = 259
     height = 229
     range = []
@@ -18,49 +27,39 @@ module ApplicationHelper
       variable = hash[:variable]
       next if values.nil?
       
-      png = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
+      png = {:variable => variable, :data => []}
       
       # get min/max values for current variable
       minmax = getMinMax values
     
       values.each_with_index do |arr, x|
+        png[:data][x] = []
         arr.each_with_index do |value, y|
           y = 228 - y
-          png[x,y] = getColor(variable, value, minmax)
+          png[:data][x][y] = getValue(value, minmax)
         end unless arr.nil?
       end
       images.push(png)
     end
     
-    # only pre OR tmp OR gdd is used
-    if images.length==1
-      output_image = images.first
-    else
-      # ALL the variables are used -> combine the pngs from the images array
-      output_image = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
-      (0..257).each do |x|
-        (0..227).each do |y|
-          red=0
-          green=0
-          blue=0
-          images.each do |image|
-            color = image.get_pixel(x,y)
-            next if color==0
-            r = ChunkyPNG::Color.r(color)
-            g = ChunkyPNG::Color.g(color)
-            b = ChunkyPNG::Color.b(color)
-            red = r unless r==0
-            green = g unless g==0
-            blue = b unless b==0
-          end
-          
-          unless red==0 and green==0 and blue==0
-            unless red==255 and green==255 and blue==255
-              output_image[x,y] = ChunkyPNG::Color.rgba(red, green, blue, 255)
-            end
-          end
-          
+    # ALL the variables are used -> combine the pngs from the images array
+    output_image = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
+    (0..257).each do |x|
+      (0..227).each do |y|
+        
+        rgb = {"tmp" => 0, "pre" => 0, "gdd" => 0, :write => false}
+        
+        images.each do |image|
+          color = image[:data][x][y]
+          next if color.nil?
+          rgb[image[:variable]] = color
+          rgb[:write] = true
         end
+        
+        if rgb[:write]
+          output_image[x,y] = ChunkyPNG::Color.rgb(rgb["tmp"], rgb["pre"], rgb["gdd"])
+        end
+        
       end
     end
     
@@ -83,42 +82,31 @@ module ApplicationHelper
     return [min_value, max_value]
   end
   
-  def getColor variable, value, minmax
+  def getValue value, minmax
     min = minmax[0]
     max = minmax[1]
-    red = 0
-    green = 0
-    blue = 0
-    case variable
-      when "pre"
-        green = 255
-      when "tmp"
-        red = 255
-      when "gdd"
-        blue = 255
-      when "all"
-        red = 255
-        green = 255
-        blue = 255
-    end
     
     if value.nil?
-      return ChunkyPNG::Color.rgba(red, green, blue, 0)
+      return nil
     end
     
     if min < 0
       range = max + min.abs
-      percent = (value + min.abs) / range
+      if range > 0
+        percent = (value + min.abs) / range
+      else
+        percent = 0
+      end
     else
       range = max - min
-      percent = value / range
+      if range > 0
+        percent = value / range
+      else
+        percent = 0
+      end
     end
     
-    red = (red*percent).to_i
-    green = (green*percent).to_i
-    blue = (blue*percent).to_i
-    
-    ChunkyPNG::Color.rgba(red, green, blue, 255)
+    return (255*percent).round.to_i
   end
   
   def wrongFormat?

@@ -36,6 +36,9 @@ class MapdiffController < ApplicationController
       data_a = Clima.find_by_year_and_month_and_model_and_scenario params[:year_a].to_i, params[:function_a].to_i, params[:model], params[:scenario]
       data_b = Clima.find_by_year_and_month_and_model_and_scenario params[:year_b].to_i, params[:function_b].to_i, params[:model], params[:scenario]
       diff_result = Clima.diff data_a["data"], data_b["data"]
+      
+      diff_result = removeNonUsedVariables diff_result, params[:variable]
+      
       response[:month_a] = params[:function_a]
       response[:month_b] = params[:function_b]
     end
@@ -45,7 +48,7 @@ class MapdiffController < ApplicationController
     respond_with(response) do |format|
       format.json
       format.png do
-        png = getPNG response[:data], params[:variable]
+        png = getPNG response[:data]
         send_data png, :type =>"image/png", :disposition => 'inline'
       end
     end
