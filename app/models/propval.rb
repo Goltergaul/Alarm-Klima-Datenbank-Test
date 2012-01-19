@@ -99,5 +99,16 @@ JScript
   def self.build variable, query
     Clima.collection.map_reduce(map(variable), reduce, :query => query, :out => {:inline => true}, :raw => true, :finalize => finalize)  
   end
-    
+  
+  def self.diff a, b, f
+    returnHash = {}
+    a.each do |variable, hash|
+      returnHash[variable] = {}
+      hash.each do |function, value|
+        next unless f==function or f==""
+        returnHash[variable][function] = a[variable][function] - b[variable][function]
+      end
+    end
+    returnHash
+  end
 end

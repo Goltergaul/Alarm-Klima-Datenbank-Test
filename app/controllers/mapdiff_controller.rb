@@ -6,9 +6,10 @@ class MapdiffController < ApplicationController
                  :model_name => params[:model],
                  :scenario_name => params[:scenario],
                  :year_a => params[:year_a].to_i,
-                 :year_b => params[:year_b].to_i }
+                 :year_b => params[:year_b].to_i
+               }
     
-    if ["min", "max", "avg"].include? params[:function_a].downcase
+    if ["Min", "Max", "Avg"].include? params[:function_a]
       
       response[:function_a] = params[:function_a]
       response[:function_b] = params[:function_b]
