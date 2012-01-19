@@ -130,5 +130,6 @@ Completed 200 OK in 2947ms (Views: 301.1ms)
 
 #############
 Ergebnis für die proval Funktion, die das absolute Minimum, Maximum und Durchschnitt findet:
-Propval.build "all", { :scenario => "GRAS" }
-=> {"results"=>[{"_id"=>1.0, "value"=>{"pre"=>{"min"=>0.1, "max"=>990.8, "avg"=>63.27447506239002}, "tmp"=>{"min"=>0.1, "max"=>45.3, "avg"=>11.988376757463943}, "gdd"=>{"min"=>1.0, "max"=>1249.0, "avg"=>236.22401287232884}}}], "timeMillis"=>247760, "counts"=>{"input"=>1200, "emit"=>1200, "reduce"=>2, "output"=>1}, "ok"=>1.0}
+
+Started GET "/propval/Europe/BAMBU/all/all/all.json" for 127.0.0.1 at 2012-01-19 13:14:59 +0100
+Completed 200 OK in 231635ms (Views: 0.9ms)

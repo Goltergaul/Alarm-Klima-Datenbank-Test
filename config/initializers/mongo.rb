@@ -6,3 +6,9 @@ if defined?(PhusionPassenger)
      MongoMapper.connection.connect if forked
    end
 end
+
+module BSON
+  def self.to_sym
+    to_s
+  end
+end

@@ -1,5 +1,5 @@
 class MapdiffController < ApplicationController
-  respond_to :json, :png
+  respond_to :json, :png, :bson
   
   def get
     response = { :map => "diff",
@@ -50,6 +50,9 @@ class MapdiffController < ApplicationController
       format.png do
         png = getPNG response[:data]
         send_data png, :type =>"image/png", :disposition => 'inline'
+      end
+      format.bson do
+        send_data BSON.serialize(response)
       end
     end
   end
