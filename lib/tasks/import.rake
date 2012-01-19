@@ -79,10 +79,17 @@ def readfile f
           @store[model][scenario][year][month] = {:model => model, :year => year, :month => month+1, :scenario => scenario}
         end
         
+        # [Grid X,Y= 258, 228]
         doc = @store[model][scenario][year][month]
         doc["data"] = Hash.new if !doc["data"]
-        doc["data"][variable] = Array.new if !doc["data"][variable]
-        if !doc["data"][variable][x]
+        if !doc["data"][variable]
+          doc["data"][variable] = Array.new 
+          (0..3).each do |i|
+            doc["data"][variable][i] = Array.new
+            doc["data"][variable][257] = nil
+          end
+        end
+        if doc["data"][variable][x].nil?
           doc["data"][variable][x] = Array.new
           doc["data"][variable][x][227] = nil
         end
@@ -129,10 +136,15 @@ end
 
 namespace :alarm do
   desc "Import Alarm Clima Data"
+  
+  task :import_all => :environment do
+    (1..3).each do |i|
+      ENV["szenario"] = i.to_s
+      Rake::Task["alarm:import"].invoke
+    end
+  end
 
   task :import => :environment do
-    
-    Rake::Task["alarm:drop"].invoke
     
     unless ENV.include?("szenario")
       raise "please specify szenario"
@@ -146,12 +158,6 @@ namespace :alarm do
     write2file()
   end
   
-  task :drop do
-    MongoMapper.database.collection("climas").drop
-    debug "Database #{MongoMapper.database.name} dropped!"
-    
-    handle = File.open(@path+"../tmp/alarm#{ENV["szenario"]}.json", "w").close #clear json file
-  end
 end
 
 def debug str
