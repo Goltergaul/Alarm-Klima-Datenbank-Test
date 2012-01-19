@@ -91,9 +91,9 @@ module ApplicationHelper
     blue = 0
     case variable
       when "pre"
-        red = 255
-      when "tmp"
         green = 255
+      when "tmp"
+        red = 255
       when "gdd"
         blue = 255
       when "all"

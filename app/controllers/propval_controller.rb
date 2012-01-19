@@ -20,6 +20,8 @@ class PropvalController < ApplicationController
     if params[:month]!="all"
       response[:month] = params[:month].to_i
       query[:month] = params[:month].to_i
+    else
+      response[:month] = params[:month]
     end
     
     match = Propval.build params[:variable], query
