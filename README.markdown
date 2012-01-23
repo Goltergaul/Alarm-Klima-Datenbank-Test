@@ -119,6 +119,7 @@ Der PNG Output ist erheblich aufwändiger. Hier wird einem Helper (getPNG), defi
 ## Erfahrungen
 
 Nachfolgend eine Liste aller unserer Erfahrungen während der Entwicklung:
+
 * Das Koordinatensystem geht links unten, nicht rechts unten an. Hätte Arbeit erspart das zu wissen ;)
 * MongoDB ist sehr performant, wenn es als nicht-relationale Datenbank verwendet wird.
 * Redundaten Speicherung von Daten ist ziemlich cool ;)
