@@ -1,31 +1,33 @@
-== Dokumentation Alarm Datenbank
+# Dokumentation Alarm Datenbank
 
   22. Januar 2012 - Multimedia Technology - Master
   Dominik Goltermann (dgoltermann.mmt-m2011@fh-salzburg.ac.at)
   Hubert Hölzl (hhoelzl.mmt-m2011@fh-salzburg.ac.at)
 
-=== Technologie
+## Technologie
 
 Als Framework wurde Ruby on Rails in der Version 3.1.3, Ruby in der Version 1.9.2 und als Datenbank MongoDB in der Version 2.0.1 verwendet. Zur Verbindung von Rails und MongoDB wurde das gem “MongoMapper” eingesetzt, weitere gems wie “json”, “bson” oder “chunky_png” dienen den verschiedenen Ausgabeformaten. Als Testrechner diente ein Intel Core i7-2630QM CPU @ 2.00Ghz (Quadcore) mit 7.7 GB Arbeitsspeicher. Architektur: Ubuntu 11.10 @ x86_64
 
-=== Datenbankstruktur
+## Datenbankstruktur
 
 Da MongoDB eine dokumentbasierende Datenbank ist, konnten wir die Struktur der Collections schon recht ähnlich an die Struktur der Ausgabe selbst anlehnen. Dies hat den Vorteil, dass die Ausgabe sowie die Speicherung der Daten selbst im JSON Format erfolgt, was große Umkonvertierungen bei den Abfragen erspart und sich positiv auf die Perfromance des Systems auswirkt.
 
 Gespeichert werden die Daten in einer einzigen Collections (“climas”) im JSON Format:
 
-  {
-  	"_id" : ObjectId("4f16aa9eeea8a88067defc59"),
-  	"model" : "Europe",
-  	"year" : 2001,
-  	"month" : 1,
-  	"scenario" : "BAMBU",
-  	"data" : {
-  		"pre" : [[null,null,null,...,...][null,134.3,null,...,...]],
-  		"tmp" : [[null,null,null,...,...][null,134.3,null,...,...]],
-  		"gdd" : [[null,null,null,...,...][null,134.3,null,...,...]]
-  	}
-  }
+```json
+{
+	"_id" : ObjectId("4f16aa9eeea8a88067defc59"),
+	"model" : "Europe",
+	"year" : 2001,
+	"month" : 1,
+	"scenario" : "BAMBU",
+	"data" : {
+		"pre" : [[null,null,null,...,...][null,134.3,null,...,...]],
+		"tmp" : [[null,null,null,...,...][null,134.3,null,...,...]],
+		"gdd" : [[null,null,null,...,...][null,134.3,null,...,...]]
+	}
+}
+```
 			
 Im Aufbau ist zu erkennen, dass es sich bei den Schlüsseln model, year, month und scenario um redundante Daten handelt, die aufgrund von Performance Vorteilen bewusst mehrfach gespeichert werden. Somit entfällt dass Abfragen über ForeignKeys auf andere Collections. Da jedoch genau diese Schlüssel bei jeder Abfrage benötigt werden, wurden darauf Indexes gesetzt.
 
@@ -37,7 +39,7 @@ Umwandlung der Daten
 
 Die Umwandlung der Daten geschieht mithilfe eines Rake Tasks in der Datei lib/tasks/import.rake. Mit dem Befehl
 
-  rake alarm:import_all
+    rake alarm:import_all
 
 werden alle Dateien importiert. Die Pfade und Dateinamen sind in zwei Variablen (files und @path) am Anfang der Datei definiert. Mit einigen RegExp Regeln wird erkannt, ob es sich bei der aktuellen Zeile um Koordinaten oder um Headerinformationen handelt. Für jedes Model, Szenario, Jahr und Monat wird ein Dokument angelegt. Falls das Dokument schon vorhanden ist, wird es mit den Werten der Koordinaten aktualisiert und abgespeichert.
 So ergibt sich die oben genannte Form der JSON Datei.
@@ -45,60 +47,62 @@ Import der Daten
 
 Die Umwandlung hat nun drei Dateien erzeugt, die nacheinander mit dem Befehl
 
-  mongo_import -d “#alarm-development” -c climas alarm1.json
+```
+mongo_import -d “#alarm-development” -c climas alarm1.json
+```
 
 import wird.
 
-=== Applikationsstruktur
+## Applikationsstruktur
 
 Die Struktur der Applikation beginnt mit den 4 verschiedenen Routen für die 4 verschiedenen Controller: mapval, mapdiff, propval und propdiff. Diese Routen werden verwendet um die verschiedenen URL Formate zu unterscheiden. In den einzelnen Controllern hingegen wird überprüft ob es sich um Monate oder Funtionen wie Min, Max oder Avg handelt. Als Beispiel dient uns hier der mapval_controller.rb. 
 
 ```ruby
-  class MapvalController < ApplicationController
-    respond_to :json, :png, :bson
+class MapvalController < ApplicationController
+  respond_to :json, :png, :bson
+
+  def get
+    response = { :map => "val",
+                 :model_name => params[:model],
+                 :scenario_name => params[:scenario],
+                 :year => params[:year].to_i }
   
-    def get
-      response = { :map => "val",
-                   :model_name => params[:model],
-                   :scenario_name => params[:scenario],
-                   :year => params[:year].to_i }
-    
-      if ["Min", "Max", "Avg"].include? params[:month_function]
-        model = Clima.getBuilder params[:month_function]
-        match = model.build params[:variable], {
-            :year => params[:year].to_i, 
-            :model => params[:model], 
-            :scenario => params[:scenario]
-          }
-        response[:function] = params[:month_function]
-        response[:data] = match["results"][0]["value"]
-      else
-        match = Clima.find_by_year_and_month_and_model_and_scenario(
-                                                  params[:year].to_i, 
-                                                  params[:month_function].to_i, 
-                                                  params[:model], 
-                                                  params[:scenario]
-                                                )
+    if ["Min", "Max", "Avg"].include? params[:month_function]
+      model = Clima.getBuilder params[:month_function]
+      match = model.build params[:variable], {
+          :year => params[:year].to_i, 
+          :model => params[:model], 
+          :scenario => params[:scenario]
+        }
+      response[:function] = params[:month_function]
+      response[:data] = match["results"][0]["value"]
+    else
+      match = Clima.find_by_year_and_month_and_model_and_scenario(
+                                                params[:year].to_i, 
+                                                params[:month_function].to_i, 
+                                                params[:model], 
+                                                params[:scenario]
+                                              )
 
-        match[:data] = removeNonUsedVariables match[:data], params[:variable]
+      match[:data] = removeNonUsedVariables match[:data], params[:variable]
 
-        response[:month] = params[:month_function].to_i
-        response[:data] = match[:data]
-      end
-    
-    
-        respond_with(response) do |format|
-          format.json
-          format.bson do
-            send_data BSON.serialize(response)
-          end
-          format.png do
-            png = getPNG response[:data]
-            send_data png, :type =>"image/png", :disposition => 'inline'
-          end
+      response[:month] = params[:month_function].to_i
+      response[:data] = match[:data]
+    end
+  
+  
+      respond_with(response) do |format|
+        format.json
+        format.bson do
+          send_data BSON.serialize(response)
+        end
+        format.png do
+          png = getPNG response[:data]
+          send_data png, :type =>"image/png", :disposition => 'inline'
         end
       end
-  end
+    end
+end
 ```
 
 Die einzige Methode “get” des Controllers handelt alle Zugriffe. Als erstes wird ein Response Hash angelegt, der im Nachhinein entweder um Monats oder um Funktionsangaben erweitert wird. Dann werden zwei Fälle unterschieden: Handelt es sich um eine Funktion (Min, Max, Avg) oder um einen Monat. Der einfachere Fall ist der Monat. Hier wird die Datenbank (mithilfe des MongoMappers) einfach auf Jahr, Monat, Model und Scenario abgefragt. Ein Helper (removeNonUsedVariables) entfernt nicht benötigte Variablen (Ausnahme: Variable = all). Am Ende der Datei im response Block wird noch auf die verschiedenen Ausgabe Formate abgefragt (dies wird später näher beschrieben).
