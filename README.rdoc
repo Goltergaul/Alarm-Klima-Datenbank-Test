@@ -1,8 +1,8 @@
 == Dokumentation Alarm Datenbank
 
-22. Januar 2012 - Multimedia Technology - Master
-Dominik Goltermann (dgoltermann.mmt-m2011@fh-salzburg.ac.at)
-Hubert Hölzl (hhoelzl.mmt-m2011@fh-salzburg.ac.at)
+  22. Januar 2012 - Multimedia Technology - Master
+  Dominik Goltermann (dgoltermann.mmt-m2011@fh-salzburg.ac.at)
+  Hubert Hölzl (hhoelzl.mmt-m2011@fh-salzburg.ac.at)
 
 === Technologie
 
@@ -45,7 +45,7 @@ Import der Daten
 
 Die Umwandlung hat nun drei Dateien erzeugt, die nacheinander mit dem Befehl
 
-	mongo_import -d “#alarm-development” -c climas alarm1.json
+  mongo_import -d “#alarm-development” -c climas alarm1.json
 
 import wird.
 
@@ -53,6 +53,7 @@ import wird.
 
 Die Struktur der Applikation beginnt mit den 4 verschiedenen Routen für die 4 verschiedenen Controller: mapval, mapdiff, propval und propdiff. Diese Routen werden verwendet um die verschiedenen URL Formate zu unterscheiden. In den einzelnen Controllern hingegen wird überprüft ob es sich um Monate oder Funtionen wie Min, Max oder Avg handelt. Als Beispiel dient uns hier der mapval_controller.rb. 
 
+```ruby
   class MapvalController < ApplicationController
     respond_to :json, :png, :bson
   
@@ -98,6 +99,7 @@ Die Struktur der Applikation beginnt mit den 4 verschiedenen Routen für die 4 v
         end
       end
   end
+```
 
 Die einzige Methode “get” des Controllers handelt alle Zugriffe. Als erstes wird ein Response Hash angelegt, der im Nachhinein entweder um Monats oder um Funktionsangaben erweitert wird. Dann werden zwei Fälle unterschieden: Handelt es sich um eine Funktion (Min, Max, Avg) oder um einen Monat. Der einfachere Fall ist der Monat. Hier wird die Datenbank (mithilfe des MongoMappers) einfach auf Jahr, Monat, Model und Scenario abgefragt. Ein Helper (removeNonUsedVariables) entfernt nicht benötigte Variablen (Ausnahme: Variable = all). Am Ende der Datei im response Block wird noch auf die verschiedenen Ausgabe Formate abgefragt (dies wird später näher beschrieben).
 
