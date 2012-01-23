@@ -155,7 +155,7 @@ Folgende Ergebnisse erreicht unsere Lösung auf einem Intel Core i7-2630QM CPU @
 
     /mapdiff/Europe/GRAS/2001/1/2002/1/all.json
 
-Ergebnis für die proval API, die das absolute Minimum, Maximum und Durchschnitt findet:
+### Ergebnis für die proval API, die das absolute Minimum, Maximum und Durchschnitt findet:
 
 
     /propval/Europe/BAMBU/all/all/all.json
@@ -167,4 +167,4 @@ Ergebnis für die proval API, die das absolute Minimum, Maximum und Durchschnitt
 
     /propval/Europe/BAMBU/2001/1/tmp.json
 
-Propdiff
+### Propdiff
