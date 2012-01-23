@@ -2,7 +2,6 @@ class MapvalController < ApplicationController
   respond_to :json, :png, :bson
   
   def get
-    # return if wrongFormat?
     
     response = { :map => "val",
                  :model_name => params[:model],
