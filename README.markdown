@@ -4,6 +4,11 @@
     Dominik Goltermann (dgoltermann.mmt-m2011@fh-salzburg.ac.at)
     Hubert Hölzl (hhoelzl.mmt-m2011@fh-salzburg.ac.at)
 
+## Aufgabenstellung
+Klimadaten für Europa sollen in einer Datenbank nach Wahl aufbereitet werden, so dass diese möglichst schnell abgefragt werden können. Vier verschiedene APIs stellen die Daten auf verschiedene Art und weise zur Verfügung wobei z.T. aufwändige Mittelwertsberechnungen über große Datenmengen durchgeführt werden müssen. Die APIs sind kurz im Abschnitt "Performance" am Ende dieser Readme Datei aufgelistet. Die Größe der Datenbank beträgt 10 Gb.
+
+Anforderung: Alle API calls sollen in maximal 10 Minuten beantwortet werden können.
+
 ## Technologie
 
 Als Framework wurde Ruby on Rails in der Version 3.1.3, Ruby in der Version 1.9.2 und als Datenbank MongoDB in der Version 2.0.1 verwendet. Zur Verbindung von Rails und MongoDB wurde das gem “MongoMapper” eingesetzt, weitere gems wie “json”, “bson” oder “chunky_png” dienen den verschiedenen Ausgabeformaten. Als Testrechner diente ein Intel Core i7-2630QM CPU @ 2.00Ghz (Quadcore) mit 7.7 GB Arbeitsspeicher. Architektur: Ubuntu 11.10 @ x86_64
@@ -32,10 +37,12 @@ Gespeichert werden die Daten in einer einzigen Collections (“climas”) im JSO
 Im Aufbau ist zu erkennen, dass es sich bei den Schlüsseln model, year, month und scenario um redundante Daten handelt, die aufgrund von Performance Vorteilen bewusst mehrfach gespeichert werden. Somit entfällt dass Abfragen über ForeignKeys auf andere Collections. Da jedoch genau diese Schlüssel bei jeder Abfrage benötigt werden, wurden darauf Indexes gesetzt.
 
 Das Feld “data” enthält drei Schlüssel pre, tmp und gdd. Darin befindet sich jeweils ein zweidimensionales Sparse Array (gefüllt mit null und Float Werten). Die Indexes des 2D Arrays repräsentiert die Koordinate auf dem Europa Model.
-Datenimport
+
+## Datenimport
 
 Der Import der Dateien läuft in zwei Schritten ab. Als Erstes werden die Rohdaten in ein JSON Format umgewandelt, das MongoDB importieren kann, was auch den zeitaufwändigsten Schritt darstellt. Als Zweites werden die erzeugten JSON Dateien in die Datenbank importiert.
-Umwandlung der Daten
+
+## Umwandlung der Daten
 
 Die Umwandlung der Daten geschieht mithilfe eines Rake Tasks in der Datei lib/tasks/import.rake. Mit dem Befehl
 
