@@ -1,0 +1,9 @@
+== Dokumentation Alarm Datenbank
+
+22. Januar 2012 - Multimedia Technology - Master
+Dominik Goltermann (dgoltermann.mmt-m2011@fh-salzburg.ac.at)
+Hubert Hölzl (hhoelzl.mmt-m2011@fh-salzburg.ac.at)
+
+=== Technologie
+
+Als Framework wurde Ruby on Rails in der Version 3.1.3, Ruby in der Version 1.9.2 und als Datenbank MongoDB in der Version 2.0.1 verwendet. Zur Verbindung von Rails und MongoDB wurde das gem “MongoMapper” eingesetzt, weitere gems wie “json”, “bson” oder “chunky_png” dienen den verschiedenen Ausgabeformaten. Als Testrechner diente ein Intel Core i7-2630QM CPU @ 2.00Ghz (Quadcore) mit 7.7 GB Arbeitsspeicher. Architektur: Ubuntu 11.10 @ x86_64
