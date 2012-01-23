@@ -43,15 +43,16 @@ Die Umwandlung der Daten geschieht mithilfe eines Rake Tasks in der Datei lib/ta
 
 werden alle Dateien importiert. Die Pfade und Dateinamen sind in zwei Variablen (files und @path) am Anfang der Datei definiert. Mit einigen RegExp Regeln wird erkannt, ob es sich bei der aktuellen Zeile um Koordinaten oder um Headerinformationen handelt. Für jedes Model, Szenario, Jahr und Monat wird ein Dokument angelegt. Falls das Dokument schon vorhanden ist, wird es mit den Werten der Koordinaten aktualisiert und abgespeichert.
 So ergibt sich die oben genannte Form der JSON Datei.
-Import der Daten
+
+## Import der Daten
 
 Die Umwandlung hat nun drei Dateien erzeugt, die nacheinander mit dem Befehl
 
-```
-mongo_import -d “#alarm-development” -c climas alarm1.json
-```
+    mongo_import -d “#alarm-development” -c climas alarm1.json
+    mongo_import -d “#alarm-development” -c climas alarm2.json
+    mongo_import -d “#alarm-development” -c climas alarm3.json
 
-import wird.
+import werden.
 
 ## Applikationsstruktur
 
