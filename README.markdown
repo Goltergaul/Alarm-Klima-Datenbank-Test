@@ -135,6 +135,8 @@ Nachfolgend eine Liste aller unserer Erfahrungen während der Entwicklung:
 
 Folgende Ergebnisse erreicht unsere Lösung auf einem Intel Core i7-2630QM CPU @ 2.00Ghz (Quadcore) mit 7.7 GB Arbeitsspeicher. Architektur: Ubuntu 11.10 @ x86_64. MongoDb v2.0.1
 
+Weitere Messwerte für die BSON und PNG Output Formate sind in der Präsentation enthalten. Diese befindet sich ebenfalls in diesem Repository.
+
 ### Ergebnis für die mapval API, die die Differenz zwischen zwei Jahren bildet:
 
 
