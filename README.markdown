@@ -139,34 +139,54 @@ Folgende Ergebnisse erreicht unsere Lösung auf einem Intel Core i7-2630QM CPU @
 
 
     /mapval/Europe/GRAS/2001/Avg/all.json
-    Completed 200 OK in 4886ms (Views: 909.0ms)
+    Completed 200 OK in 4971ms (Views: 919.0ms)
 
     /mapval/Europe/GRAS/2001/Avg/tmp.json
-    Completed 200 OK in 1711ms (Views: 290.8ms)
+    Completed 200 OK in 1678ms (Views: 301.8ms)
 
-    /mapval/Europe/GRAS/2001/1/all.json
+    /mapval/Europe/GRAS/2001/1/tmp.json
+    Completed 200 OK in 346ms (Views: 256.8ms)
 
 ### Ergebnis für die mapdiff API, die die Differenz zwischen zwei Jahren bildet:
 
 
     /mapdiff/Europe/GRAS/2001/Avg/2002/Avg/all.json
-    Completed 200 OK in 9140ms (Views: 941.1ms)
+    Completed 200 OK in 9126ms (Views: 971.1ms)
 
     /mapdiff/Europe/GRAS/2001/Avg/2002/Avg/tmp.json
-    Completed 200 OK in 2947ms (Views: 301.1ms)
+    Completed 200 OK in 3043ms (Views: 280.1ms)
 
     /mapdiff/Europe/GRAS/2001/1/2002/1/all.json
+    Completed 200 OK in 1074ms (Views: 822.3ms)
 
 ### Ergebnis für die proval API, die das absolute Minimum, Maximum und Durchschnitt findet:
 
 
     /propval/Europe/BAMBU/all/all/all.json
-    Completed 200 OK in 231635ms (Views: 0.9ms)
+    Completed 200 OK in 228069ms (Views: 0.9ms)
 
     /propval/Europe/BAMBU/2001/all/all.json
+    Completed 200 OK in 2095ms (Views: 1.0ms)
 
     /propval/Europe/BAMBU/2001/1/all.json
+    Completed 200 OK in 202ms (Views: 0.9ms)
 
     /propval/Europe/BAMBU/2001/1/tmp.json
+    Completed 200 OK in 75ms (Views: 1.8ms)
 
-### Propdiff
+### Ergebnis für die prodiff API, die die Differenz zwischen den propvals zweier Jahre findet:
+
+    /propdiff/Europe/GRAS/2001/all/2002/all/all.json
+    Completed 200 OK in 4092ms (Views: 3.1ms)
+
+    /propdiff/Europe/GRAS/2001/Avg/2002/Avg/all.json
+    Completed 200 OK in 4111ms (Views: 3.0ms)
+
+    /propdiff/Europe/GRAS/2001/Avg/2002/Avg/tmp.json
+    Completed 200 OK in 1413ms (Views: 1.0ms)
+
+    /propdiff/Europe/GRAS/2001/1/2002/1/all.json
+    Completed 200 OK in 364ms (Views: 1.3ms)
+
+    /propdiff/Europe/GRAS/2001/1/2002/1/tmp.json
+    Completed 200 OK in 179ms (Views: 2.2ms)
