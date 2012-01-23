@@ -77,23 +77,20 @@ def readfile f
           @store[model][scenario] = Hash.new unless @store[model][scenario]
           @store[model][scenario][year] = Hash.new unless @store[model][scenario][year]
           @store[model][scenario][year][month] = {:model => model, :year => year, :month => month+1, :scenario => scenario}
+          @store[model][scenario][year][month]["data"] = Hash.new
         end
         
-        # [Grid X,Y= 258, 228]
-        doc = @store[model][scenario][year][month]
-        doc["data"] = Hash.new if !doc["data"]
-        if !doc["data"][variable]
-          doc["data"][variable] = Array.new 
-          (0..3).each do |i|
-            doc["data"][variable][i] = Array.new
-            doc["data"][variable][257] = nil
+        # 2D Array anlegen
+        unless @store[model][scenario][year][month]["data"][variable]
+          @store[model][scenario][year][month]["data"][variable] = Array.new
+          # [Grid X,Y= 258, 228]
+          (0..257).each do |i|
+            @store[model][scenario][year][month]["data"][variable][i] = Array.new
+            @store[model][scenario][year][month]["data"][variable][i][227] = nil
           end
         end
-        if doc["data"][variable][x].nil?
-          doc["data"][variable][x] = Array.new
-          doc["data"][variable][x][227] = nil
-        end
-        doc["data"][variable][x][y] = (value.to_i * multi).round(2)
+        
+        @store[model][scenario][year][month]["data"][variable][x-1][y-1] = (value.to_i * multi).round(2)
       end
       year += 1
     end
